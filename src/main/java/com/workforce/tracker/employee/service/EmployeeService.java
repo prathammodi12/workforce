@@ -2,6 +2,7 @@ package com.workforce.tracker.employee.service;
 
 import com.workforce.tracker.employee.dto.EmployeeRequestDTO;
 import com.workforce.tracker.employee.dto.EmployeeResponseDTO;
+import com.workforce.tracker.employee.dto.UpdateStatusRequestDTO;
 import com.workforce.tracker.employee.entity.Employee;
 import com.workforce.tracker.employee.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,20 @@ public class EmployeeService {
             dto.setIsActive(emp.getIsActive());
             return dto;
         }).toList();
+    }
+
+    public EmployeeResponseDTO updateEmployee(UpdateStatusRequestDTO dto){
+        Employee employee= repository.findById(dto.getId()).
+                orElseThrow(()->new RuntimeException("Employee not found"));
+        employee.setIsActive(dto.getIsActive());
+        Employee updated= repository.save(employee);
+
+        EmployeeResponseDTO response= new EmployeeResponseDTO();
+        response.setId(updated.getId());
+        response.setEmployeeCode(updated.getEmployeeCode());
+        response.setIsActive(updated.getIsActive());
+
+        return response;
     }
 
 }
