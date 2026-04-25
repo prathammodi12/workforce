@@ -1,5 +1,6 @@
 package com.workforce.tracker.employee.service;
 
+import com.workforce.tracker.common.exception.ResourceNotFoundException;
 import com.workforce.tracker.employee.dto.EmployeeRequestDTO;
 import com.workforce.tracker.employee.dto.EmployeeResponseDTO;
 import com.workforce.tracker.employee.dto.UpdateStatusRequestDTO;
@@ -55,6 +56,29 @@ public class EmployeeService {
         response.setIsActive(updated.getIsActive());
 
         return response;
+    }
+
+    public EmployeeResponseDTO getEmployeeById(Long id){
+
+        Employee employee= repository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Employee not found"));
+
+        EmployeeResponseDTO dto= new EmployeeResponseDTO();
+        dto.setId(employee.getId());
+        dto.setEmployeeCode(employee.getEmployeeCode());
+        dto.setIsActive(employee.getIsActive());
+
+        return dto;
+    }
+
+    public String deleteEmployee(Long id){
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException("Employee not found");
+        }
+
+        repository.deleteById(id);
+
+        return "Employee deleted successfully";
     }
 
 }

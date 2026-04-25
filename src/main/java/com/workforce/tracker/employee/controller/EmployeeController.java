@@ -38,4 +38,14 @@ public class EmployeeController {
             @RequestBody @Valid UpdateStatusRequestDTO dto){
         return CommonResponse.success(service.updateEmployee(dto));
     }
+
+    @GetMapping("/{id}")
+    public CommonResponse<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id){
+        return CommonResponse.success(service.getEmployeeById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public CommonResponse<String> deleteEmployee(@PathVariable Long id){
+        return CommonResponse.success(service.deleteEmployee(id));
+    }
 }
