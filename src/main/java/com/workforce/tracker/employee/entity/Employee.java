@@ -1,6 +1,6 @@
 package com.workforce.tracker.employee.entity;
 
-import com.workforce.tracker.auth.entity.User;
+import com.workforce.tracker.user.entity.User;
 import com.workforce.tracker.department.entity.Department;
 import com.workforce.tracker.designation.entity.Designation;
 import jakarta.persistence.*;
@@ -40,6 +40,7 @@ public class Employee {
 
     private String profileUrl;
 
+    @Column(name = "is_active")
     private Boolean isActive;
 
     private Boolean isVerified;
