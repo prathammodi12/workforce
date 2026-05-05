@@ -29,8 +29,9 @@ public class AuthService {
             throw new ResourceNotFoundException("Invalid password");
         }
 
-        return jwtUtil.generateToken(user.getUsername());
+        return jwtUtil.generateToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
     }
-
-
 }

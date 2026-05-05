@@ -5,56 +5,61 @@ import com.workforce.tracker.auth.security.CustomUserDetailsService;
 import com.workforce.tracker.auth.util.JwtUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 public class JwtFilter implements Filter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService customUserDetailsService;
 
     public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
-        this.jwtUtil = jwtUtil;
-        this.customUserDetailsService = customUserDetailsService;
-    }
+        this.jwtUtil = jwtUtil;}
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
         HttpServletRequest req = (HttpServletRequest)  request;
 
         String authHeader= req.getHeader("Authorization");
 
-        System.out.println("Incoming Request: " + ((HttpServletRequest) request).getRequestURI());
+        log.info("Incoming request: {}", req.getRequestURI());;
 
         if(authHeader !=null && authHeader.startsWith("Bearer")){
-            String token = authHeader.substring(7);
+            String token = authHeader.substring(7); // remove Berrer
 
             try{
-                String username= jwtUtil.extractUsername(token);
+                String username= jwtUtil.extractUserName(token);
+                String role= jwtUtil.extractRole(token);
 
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                log.info("User: {}, Role: {}",username,role);
 
-                UsernamePasswordAuthenticationToken authentication =
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("Role_"+role);
+                // Spring expects ROLE_ prefix
+
+                UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                                username, //principal
+                                null, // no password needed here
+                                Collections.singletonList(authority));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("Authenticated User: "+username);
-                System.out.println("Roles: " + userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                // tells Spring: user is authenticated
 
             } catch (Exception e) {
-                System.out.println("Invalid Token");
+                log.error("Invalid JWT Token"+ e.getMessage());
             }
         }
 
         chain.doFilter(request,response);
+        // continue request to controller
     }
 }
