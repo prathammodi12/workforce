@@ -3,6 +3,7 @@ package com.workforce.tracker.auth.security;
 import com.workforce.tracker.common.exception.ResourceNotFoundException;
 import com.workforce.tracker.user.entity.User;
 import com.workforce.tracker.user.repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                List.of()
+                List.of(new SimpleGrantedAuthority("ROLE_"+ user.getRole().name()))
         );
     }
 }

@@ -6,6 +6,7 @@ import com.workforce.tracker.employee.dto.EmployeeResponseDTO;
 import com.workforce.tracker.employee.dto.UpdateStatusRequestDTO;
 import com.workforce.tracker.employee.service.EmployeeService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class EmployeeController {
     }
 
     //Create Api
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public CommonResponse<EmployeeResponseDTO> createEmployee(
             @RequestBody @Valid EmployeeRequestDTO dto){
@@ -28,6 +30,7 @@ public class EmployeeController {
     }
 
     //Get all Api
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping
     public CommonResponse<List<EmployeeResponseDTO>> getAllEmployees(){
         return CommonResponse.success(service.getAllEmployees());
@@ -44,6 +47,7 @@ public class EmployeeController {
         return CommonResponse.success(service.getEmployeeById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public CommonResponse<String> deleteEmployee(@PathVariable Long id){
         return CommonResponse.success(service.deleteEmployee(id));

@@ -33,20 +33,4 @@ public class AuthController {
         return authService.login(dto);
     }
 
-    @PostMapping("/create-user")
-    public String createUser() {
-
-        User user = new User();
-        user.setUsername("admin");
-
-        user.setEmail("admin@gmail.com");
-
-        user.setPassword(passwordEncoder.encode("123"));
-        user.setRole(Role.ADMIN);
-        user.setIsActive(true);
-
-        userRepository.save(user);
-
-        return "User created successfully";
-    }
 }
