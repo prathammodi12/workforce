@@ -1,65 +1,85 @@
 package com.workforce.tracker.auth.filter;
 
-
 import com.workforce.tracker.auth.security.CustomUserDetailsService;
 import com.workforce.tracker.auth.util.JwtUtil;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 
 @Component
-public class JwtFilter implements Filter {
+public class JwtFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(JwtFilter.class);
+
     private final JwtUtil jwtUtil;
 
-    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
-        this.jwtUtil = jwtUtil;}
+    public JwtFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws ServletException, IOException {
 
-        HttpServletRequest req = (HttpServletRequest)  request;
+        String path = request.getRequestURI();
 
-        String authHeader= req.getHeader("Authorization");
+        log.info("Incoming request: {}", path);
 
-        log.info("Incoming request: {}", req.getRequestURI());;
+        // Skip public endpoints
+        if (path.equals("/auth/login") ||
+                path.equals("/auth/refresh")) {
 
-        if(authHeader !=null && authHeader.startsWith("Bearer")){
-            String token = authHeader.substring(7); // remove Bearer
+            chain.doFilter(request, response);
+            return;
+        }
 
-            try{
-                String username= jwtUtil.extractUserName(token);
-                String role= jwtUtil.extractRole(token);
+        String authHeader =
+                request.getHeader("Authorization");
+
+        if (authHeader != null &&
+                authHeader.startsWith("Bearer ")) {
+
+            String token = authHeader.substring(7);
+
+            try {
+                String username = jwtUtil.extractUserName(token);
+
+                String role =jwtUtil.extractRole(token);
 
                 log.info("User: {}, Role: {}",username,role);
 
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_"+role);
-                // Spring expects ROLE_ prefix
+                SimpleGrantedAuthority authority =new SimpleGrantedAuthority(
+                        "ROLE_" + role);
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                username, //principal
-                                null, // no password needed here
-                                Collections.singletonList(authority));
+                                username,
+                                null,
+                                Collections.singletonList(authority)
+                        );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
-                // tells Spring: user is authenticated
 
             } catch (Exception e) {
-                log.error("Invalid JWT Token{}", e.getMessage());
+                log.error("Invalid JWT token: {}",e.getMessage());
+                SecurityContextHolder.clearContext();
             }
         }
-
-        chain.doFilter(request,response);
-        // continue request to controller
+        chain.doFilter(request, response);
     }
 }

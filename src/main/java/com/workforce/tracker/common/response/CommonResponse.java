@@ -7,14 +7,15 @@ import lombok.Data;
 @AllArgsConstructor
 public class CommonResponse<T> {
 
+    private boolean success;
     private String message;
     private T data;
 
     public static <T> CommonResponse<T> success(T data){
-        return new CommonResponse<>("Success",data);
+        return new CommonResponse<>(true,"Success",data);
     }
 
     public static <T> CommonResponse<T> failure(String message){
-        return new CommonResponse<>(message,null);
+        return new CommonResponse<>(false,message,null);
     }
 }
