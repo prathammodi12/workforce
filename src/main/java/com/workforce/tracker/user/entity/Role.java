@@ -1,4 +1,4 @@
-package com.workforce.tracker.auth.entity;
+package com.workforce.tracker.user.entity;
 
 public enum Role {
     SUPER_ADMIN,

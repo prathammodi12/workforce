@@ -1,6 +1,5 @@
 package com.workforce.tracker.user.entity;
 
-import com.workforce.tracker.auth.entity.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

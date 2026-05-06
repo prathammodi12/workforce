@@ -34,7 +34,7 @@ public class JwtFilter implements Filter {
         log.info("Incoming request: {}", req.getRequestURI());;
 
         if(authHeader !=null && authHeader.startsWith("Bearer")){
-            String token = authHeader.substring(7); // remove Berrer
+            String token = authHeader.substring(7); // remove Bearer
 
             try{
                 String username= jwtUtil.extractUserName(token);
@@ -42,7 +42,7 @@ public class JwtFilter implements Filter {
 
                 log.info("User: {}, Role: {}",username,role);
 
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("Role_"+role);
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_"+role);
                 // Spring expects ROLE_ prefix
 
                 UsernamePasswordAuthenticationToken auth =
@@ -55,7 +55,7 @@ public class JwtFilter implements Filter {
                 // tells Spring: user is authenticated
 
             } catch (Exception e) {
-                log.error("Invalid JWT Token"+ e.getMessage());
+                log.error("Invalid JWT Token{}", e.getMessage());
             }
         }
 

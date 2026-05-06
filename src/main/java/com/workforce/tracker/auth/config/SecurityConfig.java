@@ -33,7 +33,7 @@ public class SecurityConfig {
                 // no HTTP session -> every request must carry JWT
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/login", "/auth/refresh").permitAll()
                         //login API is public
 
                         .anyRequest().authenticated()

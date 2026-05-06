@@ -1,8 +1,11 @@
 package com.workforce.tracker.auth.controller;
 
+import com.workforce.tracker.auth.dto.AuthResponse;
 import com.workforce.tracker.auth.dto.LoginRequestDto;
+import com.workforce.tracker.auth.dto.RefreshRequest;
 import com.workforce.tracker.auth.service.AuthService;
 import com.workforce.tracker.user.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +23,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDto dto){
-        return authService.login(dto);
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequestDto dto){
+        return ResponseEntity.ok(authService.login(dto));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshRequest request){
+        return ResponseEntity.ok(
+                authService.refreshToken(request)
+        );
     }
 }
