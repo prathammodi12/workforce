@@ -2,6 +2,7 @@ package com.workforce.tracker.auth.service;
 
 import com.workforce.tracker.auth.dto.AuthResponse;
 import com.workforce.tracker.auth.dto.LoginRequestDto;
+import com.workforce.tracker.auth.dto.LogoutRequest;
 import com.workforce.tracker.auth.dto.RefreshRequest;
 import com.workforce.tracker.auth.entity.RefreshToken;
 import com.workforce.tracker.auth.repository.RefreshTokenRepository;
@@ -140,5 +141,22 @@ public class AuthService {
         refreshToken.setRevoked(true);
 
         refreshTokenRepository.save(refreshToken);
+    }
+
+    public void logout(LogoutRequest request) {
+        log.info("Logout flow started");
+
+        RefreshToken refreshToken= refreshTokenRepository
+                .findByToken(request.getRefreshToken())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Refresh token not found"
+                        ));
+
+        refreshToken.setRevoked(true);
+
+        refreshTokenRepository.save(refreshToken);
+
+        log.info("Logout flow finished");
     }
 }
