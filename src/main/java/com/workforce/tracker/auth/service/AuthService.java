@@ -159,4 +159,15 @@ public class AuthService {
 
         log.info("Logout flow finished");
     }
+
+    public void cleanupRefreshTokens(){
+        log.info("Refresh Token cleanup started ");
+
+        refreshTokenRepository.deleteByExpiryDateBefore(Instant.now());
+
+        refreshTokenRepository.deleteByRevokedTrue();
+
+        log.info("Refresh Token cleanup completed");
+
+    }
 }
