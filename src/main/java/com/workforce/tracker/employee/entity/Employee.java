@@ -1,5 +1,6 @@
 package com.workforce.tracker.employee.entity;
 
+import com.workforce.tracker.common.entity.BaseEntity;
 import com.workforce.tracker.user.entity.User;
 import com.workforce.tracker.department.entity.Department;
 import com.workforce.tracker.designation.entity.Designation;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name= "employees")
 @Data
-public class Employee {
+public class Employee extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,11 +56,4 @@ public class Employee {
 
     private Boolean ispasswordChanged;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private String createdBy;
-
-    private String updatedBy;
 }
