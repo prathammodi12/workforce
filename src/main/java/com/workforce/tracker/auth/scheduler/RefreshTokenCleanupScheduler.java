@@ -15,6 +15,7 @@ public class RefreshTokenCleanupScheduler {
     private final AuthService authService;
 
     @Scheduled(cron = "0 0 2 * * *")
+//    @Scheduled(fixedRate = 10000)
     @Transactional
     public void cleanupTokens(){
         log.info("Refresh Token cleanup started");
